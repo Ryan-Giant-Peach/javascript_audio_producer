@@ -18,11 +18,11 @@ container.addEventListener("click", function () {
   analyser = audioContext.createAnalyser();
   audioSource.connect(analyser);
   analyser.connect(audioContext.destination);
-  analyser.fftSize = 64;
+  analyser.fftSize = 1024;
   const bufferLength = analyser.frequencyBinCount;
   const dataArray = new Uint8Array(bufferLength);
 
-  const barWidth = canvas.width / 2 / bufferLength;
+  const barWidth = 15;
   let barHeight;
   let horizX;
 
@@ -47,11 +47,11 @@ file.addEventListener("change", function () {
   analyser = audioContext.createAnalyser();
   audioSource.connect(analyser);
   analyser.connect(audioContext.destination);
-  analyser.fftSize = 64;
+  analyser.fftSize = 1024;
   const bufferLength = analyser.frequencyBinCount;
   const dataArray = new Uint8Array(bufferLength);
 
-  const barWidth = canvas.width / 2 / bufferLength;
+  const barWidth = 15;
   let barHeight;
   let horizX;
 
@@ -67,16 +67,12 @@ file.addEventListener("change", function () {
 
 function drawVisualiser(bufferLength, horizX, barWidth, barHeight, dataArray) {
   for (let i = 0; i < bufferLength; i++) {
-    barHeight = dataArray[i] * 2; // louder sounds produce longer bars
+    barHeight = dataArray[i] * 1.5; // louder sounds produce longer bars
     ctx.save(); // save current canvas settings
     ctx.translate(canvas.width / 2, canvas.height / 2); // translate coordinates and make them the centre point
-    ctx.rotate(i + (Math.PI * 2) / bufferLength); // rotate canvas by a value
-    const red = (i * barHeight) / 30; // Can mess with lines 71, 72, 73 with different combinations to create more unique colours
-    const green = i / 2;
-    const blue = barHeight;
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, barWidth, 10);
-    ctx.fillStyle = "rgb(" + red + "," + green + "," + blue + ")";
+    ctx.rotate(i * Math.PI * 4 / bufferLength); // rotate canvas by a value
+    const hue = i * 3;
+    ctx.fillStyle = "hsl(" + hue + ',100%,' + barHeight/3 + '%)';
     ctx.fillRect(0, 0, barWidth, barHeight);
     horizX += barWidth;
     ctx.restore(); // returns to original canvas save state
