@@ -22,7 +22,7 @@ container.addEventListener("click", function () {
   const bufferLength = analyser.frequencyBinCount;
   const dataArray = new Uint8Array(bufferLength);
 
-  const barWidth = canvas.width / bufferLength;
+  const barWidth = canvas.width / 2 / bufferLength;
   let barHeight;
   let horizX;
 
@@ -51,7 +51,7 @@ file.addEventListener("change", function () {
   const bufferLength = analyser.frequencyBinCount;
   const dataArray = new Uint8Array(bufferLength);
 
-  const barWidth = canvas.width / bufferLength;
+  const barWidth = canvas.width / 2 / bufferLength;
   let barHeight;
   let horizX;
 
@@ -59,7 +59,7 @@ file.addEventListener("change", function () {
     horizX = 0;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     analyser.getByteFrequencyData(dataArray);
-    drawVisualiser(bufferLength, horizX, barWidth, barHeight, dataArray)
+    drawVisualiser(bufferLength, horizX, barWidth, barHeight, dataArray);
     requestAnimationFrame(animate);
   }
   animate();
@@ -68,11 +68,17 @@ file.addEventListener("change", function () {
 function drawVisualiser(bufferLength, horizX, barWidth, barHeight, dataArray) {
   for (let i = 0; i < bufferLength; i++) {
     barHeight = dataArray[i] * 2; // louder sounds produce longer bars
-    const red = i * barHeight/20; // Can mess with lines 71, 72, 73 with different combinations to create more unique colours
-    const green = i * 2;
-    const blue = barHeight/2;
-    ctx.fillStyle = "rgb(" + red + ',' + green + ',' + blue + ')';
-    ctx.fillRect(horizX, canvas.height - barHeight, barWidth, barHeight);
+    ctx.save(); // save current canvas settings
+    ctx.translate(canvas.width / 2, canvas.height / 2); // translate coordinates and make them the centre point
+    ctx.rotate(i + (Math.PI * 2) / bufferLength); // rotate canvas by a value
+    const red = (i * barHeight) / 30; // Can mess with lines 71, 72, 73 with different combinations to create more unique colours
+    const green = i / 2;
+    const blue = barHeight;
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, barWidth, 10);
+    ctx.fillStyle = "rgb(" + red + "," + green + "," + blue + ")";
+    ctx.fillRect(0, 0, barWidth, barHeight);
     horizX += barWidth;
+    ctx.restore(); // returns to original canvas save state
   }
 }
